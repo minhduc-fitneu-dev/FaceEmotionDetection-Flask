@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kết quả phân tích</title>
+    <link rel="stylesheet" href="/static/css/analysis_detail.css">
+</head>
+<body>
+<div class="navbar">
+    <div class="nav-left">
+        <a href="{{ url_for('home') }}">Trang chủ</a>
+        <a href="{{ url_for('classes') }}">Lớp học</a>
+        <a href="#">Thống kê</a>
+        <a href="#">Lịch sử phân tích</a>
+    </div>
+    <div class="nav-right">
+        <div class="avatar">Avatar</div>
+    </div>
+</div>
+
+<div class="container">
+    <h2>Kết quả phân tích khuôn mặt</h2>
+
+    {% if emotion_stats %}
+    <div class="summary-box">
+        <h3>Thống kê biểu cảm (% so với tổng số sinh viên lớp)</h3>
+        <ul>
+            {% for emotion, value in emotion_stats.items() %}
+            <li><strong>{{ emotion }}</strong>: {{ value }}%</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if results %}
+    <div class="grid">
+        {% for result in results %}
+        <div class="card">
+            <img src="/{{ result['face_path'] }}" alt="Student Face">
+            <div class="info">
+                <p><strong>Emotion:</strong> {{ result['emotion'] }}</p>
+                <p><strong>Confidence:</strong> {{ result['confidence'] }}%</p>
+                <p><small>{{ result['timestamp'] }}</small></p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="no-data">Không có dữ liệu phân tích.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" href="/static/css/home.css">
+</head>
+<body>
+<div id="loading-overlay" style="display:none;">
+    <div class="spinner"></div>
+</div>
+<div class="navbar">
+    <div class="nav-left">
+        <a href="{{ url_for('home') }}" class="active">Trang chủ</a>
+        <a href="{{ url_for('classes') }}">Lớp học</a>
+        <a href="{{ url_for('stats') }}">Thống kê</a>
+        <a href="#">Lịch sử phân tích</a>
+    </div>
+    <div class="nav-right">
+        <div class="avatar-dropdown">
+            <div class="avatar" onclick="toggleDropdown()">Avatar</div>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="#">Thông tin cá nhân</a>
+                <a href="{{ url_for('logout') }}">Đăng xuất</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-message">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% if classes %}
+    <form method="POST" enctype="multipart/form-data" class="upload-form">
+        <h2>Upload Ảnh hoặc Video</h2>
+        <input type="file" name="file" required><br>
+        <select name="class_id" required>
+            <option value="" disabled selected>Chọn lớp</option>
+            {% for class_ in classes %}
+                <option value="{{ class_[0] }}">{{ class_[1] }}</option>
+            {% endfor %}
+        </select><br>
+        <button type="submit">Phân tích</button>
+    </form>
+    {% else %}
+    <div class="no-class">
+        <p>Chưa có lớp nào, hãy tạo lớp ở mục <strong>Lớp học → Thêm lớp học</strong>.</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    setTimeout(function() {
+        var flash = document.querySelector('.flash-message');
+        if (flash) {
+            flash.style.transition = 'opacity 1s ease';
+            flash.style.opacity = '0';
+            setTimeout(function() { flash.remove(); }, 1000);
+        }
+    }, 3000);
+</script>
+
+</body>
+</html>
+
+<script>
+function showLoading() {
+    document.getElementById('loading-overlay').style.display = 'flex';
+}
+</script>
+
+<script>
+function toggleDropdown() {
+    const menu = document.getElementById('dropdownMenu');
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+
+// Ẩn dropdown nếu click ra ngoài
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById('dropdownMenu');
+    const avatar = document.querySelector('.avatar');
+    if (!avatar.contains(event.target) && !menu.contains(event.target)) {
+        menu.style.display = 'none';
+    }
+});
+</script>

@@ -1,0 +1,33 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# OS files
+.DS_Store
+
+# ENV
+*.env
+*.ENV
+google.env
+
+# AI Models 
+*.h5
+*.hdf5
+*.model
+*.pb
+*.weights
+
+# Flask instance folders
+instance/
+
+# Uploads
+uploads/
+media/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log

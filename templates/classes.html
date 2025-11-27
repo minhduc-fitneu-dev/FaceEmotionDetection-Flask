@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lớp học</title>
+    <link rel="stylesheet" href="/static/css/classes.css">
+</head>
+<body>
+<div class="navbar">
+    <div class="nav-left">
+        <a href="{{ url_for('home') }}">Trang chủ</a>
+        <a href="{{ url_for('classes') }}" class="active">Lớp học</a>
+        <a href="{{ url_for('stats') }}">Thống kê</a>
+        <a href="#">Lịch sử phân tích</a>
+    </div>
+    <div class="nav-right">
+        <div class="avatar-dropdown">
+            <div class="avatar" onclick="toggleDropdown()">Avatar</div>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="#">Thông tin cá nhân</a>
+                <a href="{{ url_for('logout') }}">Đăng xuất</a>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-message">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="header">
+        <h2>Danh sách các lớp</h2>
+        <form action="{{ url_for('add_class') }}" method="POST" class="add-class-form">
+            <input type="text" name="ten_lop" placeholder="Tên lớp mới" required>
+            <input type="number" name="so_sv" placeholder="Số sinh viên" required min="1">
+            <button type="submit">Thêm lớp học</button>
+        </form>
+    </div>
+
+    <div class="class-list">
+        {% for class_ in classes %}
+        <div class="class-card">
+            <h3>{{ class_[1] }}</h3>
+            <p>Số sinh viên: {{ class_[2] }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    setTimeout(function() {
+        var flash = document.querySelector('.flash-message');
+        if (flash) {
+            flash.style.transition = 'opacity 1s ease';
+            flash.style.opacity = '0';
+            setTimeout(function() { flash.remove(); }, 1000);
+        }
+    }, 3000);
+</script>
+
+</body>
+</html>
+
+<script>
+function toggleDropdown() {
+    const menu = document.getElementById('dropdownMenu');
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+
+// Ẩn dropdown nếu click ra ngoài
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById('dropdownMenu');
+    const avatar = document.querySelector('.avatar');
+    if (!avatar.contains(event.target) && !menu.contains(event.target)) {
+        menu.style.display = 'none';
+    }
+});
+</script>

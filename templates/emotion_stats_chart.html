@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Thống kê biểu cảm</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/emotion_stats_chart.css') }}">
+</head>
+<body>
+
+<!-- ✅ Navigation Bar giữ nguyên như bạn yêu cầu -->
+<div class="navbar">
+    <div class="nav-left">
+        <a href="{{ url_for('home') }}">Trang chủ</a>
+        <a href="{{ url_for('classes') }}">Lớp học</a>
+        <a href="{{ url_for('stats') }}" class="active">Thống kê</a>
+        <a href="#">Lịch sử phân tích</a>
+    </div>
+    <div class="nav-right">
+        <div class="avatar-dropdown">
+            <div class="avatar" onclick="toggleDropdown()">Avatar</div>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="#">Thông tin cá nhân</a>
+                <a href="{{ url_for('logout') }}">Đăng xuất</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Biểu đồ -->
+<div class="chart-container">
+    <h2>Thống kê biểu cảm theo lớp và ngày</h2>
+
+    <form method="GET">
+        <label>Lớp:
+            <select name="class_id" onchange="this.form.submit()">
+                {% for cid, cname in all_classes %}
+                <option value="{{ cid }}" {% if cid == selected_class_id %}selected{% endif %}>{{ cname }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>Ngày:
+            <input type="date" name="date" value="{{ selected_date or current_date }}" onchange="this.form.submit()">
+        </label>
+    </form>
+
+    <div class="total-box">
+        Tổng ảnh đã phân tích: <strong>{{ total_images }}</strong>
+    </div>
+
+    <canvas id="emotionChart"></canvas>
+    <button class="btn-export" onclick="exportChart()">Tải biểu đồ</button>
+</div>
+
+<!-- Script -->
+<script>
+    const ctx = document.getElementById('emotionChart').getContext('2d');
+    const data = {
+        labels: {{ labels | tojson }},
+        datasets: [
+            {% for emotion, counts in emotion_counts.items() %}
+            {
+                label: '{{ emotion }}',
+                data: {{ counts | tojson }},
+                backgroundColor: '{{ colors[emotion] }}'
+            },
+            {% endfor %}
+        ]
+    };
+
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: {
+            responsive: true,
+            scales: {
+                x: { stacked: false },
+                y: { beginAtZero: true, stacked: false }
+            },
+            plugins: {
+                legend: { position: 'top' }
+            }
+        }
+    });
+
+    function exportChart() {
+        const link = document.createElement('a');
+        link.download = 'emotion_chart.png';
+        link.href = chart.toBase64Image();
+        link.click();
+    }
+
+    function toggleDropdown() {
+        const menu = document.getElementById('dropdownMenu');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    document.addEventListener('click', function(event) {
+        const menu = document.getElementById('dropdownMenu');
+        const avatar = document.querySelector('.avatar');
+        if (!avatar.contains(event.target) && !menu.contains(event.target)) {
+            menu.style.display = 'none';
+        }
+    });
+</script>
+</body>
+</html>
